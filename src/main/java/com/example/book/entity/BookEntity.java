@@ -3,6 +3,7 @@ package com.example.book.entity;
 import com.example.book.dto.BookDTO;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.thymeleaf.model.IStandaloneElementTag;
 
 import javax.persistence.*;
@@ -11,7 +12,9 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Table(name = "book_table")
+@ToString
 public class BookEntity {
+//    TEST 코드 위해 > @ToString  // 원래는 안해도 됨
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

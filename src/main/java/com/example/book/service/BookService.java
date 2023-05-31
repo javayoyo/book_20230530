@@ -14,14 +14,17 @@ public class BookService {
 
     private final BookRepository bookRepository;
 
-    public void save(BookDTO bookDTO) {
+    public Long save(BookDTO bookDTO) {
 //        BookEntity bookEntity = new BookEntity();
 //        bookEntity.setBookName(bookDTO.getBookName());
 //        bookEntity.setBookAuthor(bookDTO.getBookAuthor());
 //        bookEntity.setBookPrice(bookDTO.getBookPrice());
         BookEntity bookEntity = BookEntity.toSaveEntity(bookDTO);
-        bookRepository.save(bookEntity);
-
+//        System.out.println("bookEntity = " + bookEntity);
+//        BookEntity savedEntity = bookRepository.save(bookEntity);
+//        System.out.println("savedEntity = " + savedEntity);
+        // 저장처리 후 저장한 데이터의 id 값을 리턴
+        return bookRepository.save(bookEntity).getId();
     }
 
 //    서비스 내에서만 Entity 로 변환시켜준 후, 해당 값을 리턴한다ㄱ
