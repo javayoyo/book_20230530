@@ -3,9 +3,12 @@ package com.example.book;
 import com.example.book.dto.BookDTO;
 import com.example.book.service.BookService;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 // Assertions 클래스가 가지고 있는 모든 static 메서드를 가져오겠다.
 import static org.assertj.core.api.Assertions.*;
@@ -38,6 +41,9 @@ public class BookTest {
 
     //
     @Test
+    @Transactional
+//    @Transactional > java 버전 아닌 spring 으로 적용
+    @Rollback(value = true)
     public void bookSaveTest() {
         BookDTO bookDTO = newBook(); // 테스트용 데이터 준비
         Long savedId = bookService.save(bookDTO); // 저장을 위해 메서드 호출 후 id 값 가져옴
@@ -47,7 +53,58 @@ public class BookTest {
         assertThat(bookDTO.getBookName()).isEqualTo(findDTO.getBookName());
 
 
-
     }
+
+    // 삭제 테스트
+    @Test
+    @Transactional
+    @Rollback
+    @DisplayName("삭제 테스트")
+    public void bookDeleteTest() {
+
+        /**
+         * 1. 새로운 데이터 저장
+         * 2. 저장된 데이터의 id를 가져옴
+         * 3. 해당 id로 삭제 처리
+         * 4. 해당 id로 조회했을 때 null 이면 삭제 테스트 성공
+         */
+        BookDTO bookDTO = newBook();
+        Long savedId = bookService.save(bookDTO);
+        bookService.delete(savedId);
+        assertThat(bookService.findById(savedId)).isNull();
+    }
+
+    // 수정 테스트
+
+    @Test
+    @Transactional
+    @Rollback
+    @DisplayName("수정 테스트")
+    public void bookUpdateTest() {
+        /**
+         * 1. 새로운 데이터 저장
+         * 2. 수정용 데이터 준비 및 수정 처리 (제목만 변경)
+         * 3. 데이터 조회
+         * 4. 2번에서 수정한 제목과 3번에서 조회한 제목이 일치하면 수정 성공
+         */
+        // 1.
+        BookDTO bookDTO = newBook();
+        Long savedId = bookService.save(bookDTO);
+
+        // 2.
+        bookDTO.setId(savedId);
+//        ㄴ 수정하기 필요한 id 세팅
+        bookDTO.setBookName("수정 제목");
+        bookService.update(bookDTO);
+
+        // 3.
+        BookDTO dto = bookService.findById(savedId);
+
+        // 4.
+        assertThat(dto.getBookName()).isEqualTo(bookDTO.getBookName());
+    }
+
+
+
 
 }
